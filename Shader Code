@@ -1,0 +1,23 @@
+// Reference resolution (looks best at this scale)
+float2 ReferenceResolution = float2(3840.0, 2160.0);
+
+// Scale UVs to keep pixel density consistent
+float2 scale = ViewSize / ReferenceResolution;
+float2 pixelCoord = floor(UV * 1280.0 * scale);
+
+int x = (int)fmod(pixelCoord.x, 4);
+int y = (int)fmod(pixelCoord.y, 4);
+int index = x + y * 4;
+
+float bayer[16] = {
+    0.0/16.0,  8.0/16.0,  2.0/16.0, 10.0/16.0,
+   12.0/16.0,  4.0/16.0, 14.0/16.0,  6.0/16.0,
+    3.0/16.0, 11.0/16.0,  1.0/16.0,  9.0/16.0,
+   15.0/16.0,  7.0/16.0, 13.0/16.0,  5.0/16.0
+};
+
+float d = bayer[index];
+float steps = 12.0;
+float3 qColor = floor(Color * steps + d) / steps;
+
+return qColor;
